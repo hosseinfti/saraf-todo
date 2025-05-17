@@ -9,6 +9,7 @@ interface TodoStore {
   updateTodo: (updated: Todo) => void
   deleteTodo: (id: string) => void
   toggleStatus: (id: string) => void
+  clearCompleted: () => void
 }
 
 export const useTodoStore = create<TodoStore>()(
@@ -41,6 +42,10 @@ export const useTodoStore = create<TodoStore>()(
             t.id === id ? { ...t, completed: !t.completed } : t
           ),
         })),
+        clearCompleted: () =>
+            set((state) => ({
+              todos: state.todos.filter((t) => !t.completed),
+            })),
     }),
     {
       name: 'todos-storage',
