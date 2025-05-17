@@ -10,21 +10,58 @@ import {
   Paper,
   Typography,
   Stack,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
+import { useState } from "react";
 import { useTodoStore } from "../store/useTodoStore";
 
 export default function TodoList() {
-  const todos = useTodoStore((s) => s.todos);
-  const toggleStatus = useTodoStore((s) => s.toggleStatus);
-  const deleteTodo = useTodoStore((s) => s.deleteTodo);
+  const { todos, toggleStatus, deleteTodo, clearCompleted } = useTodoStore();
+
   const navigate = useNavigate();
+
+  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "active") return !todo.completed;
+    if (filter === "completed") return todo.completed;
+    return true;
+  });
 
   return (
     <Stack spacing={2} sx={{ p: 4 }}>
       <Typography variant="h4">Todo List</Typography>
-      <Button variant="contained" onClick={() => navigate("/create")}>
-        ➕ Add New
-      </Button>
+
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Button variant="contained" onClick={() => navigate("/create")}>
+          Add New
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={clearCompleted}
+          disabled={!todos.some((t) => t.completed)}
+        >
+          Clear Completed
+        </Button>
+
+        <FormControl sx={{ minWidth: 160 }}>
+          <InputLabel id="filter-label">Filter</InputLabel>
+          <Select
+            labelId="filter-label"
+            value={filter}
+            label="Filter"
+            onChange={(e) => setFilter(e.target.value as any)}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
 
       <TableContainer component={Paper}>
         <Table>
@@ -36,7 +73,7 @@ export default function TodoList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {todos.map((todo) => (
+            {filteredTodos.map((todo) => (
               <TableRow key={todo.id}>
                 <TableCell>{todo.description}</TableCell>
                 <TableCell>
@@ -57,9 +94,9 @@ export default function TodoList() {
                 </TableCell>
               </TableRow>
             ))}
-            {todos.length === 0 && (
+            {filteredTodos.length === 0 && (
               <TableRow>
-                <TableCell colSpan={3}>No todos yet.</TableCell>
+                <TableCell colSpan={3}>No todos match this filter.</TableCell>
               </TableRow>
             )}
           </TableBody>
