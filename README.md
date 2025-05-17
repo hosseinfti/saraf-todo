@@ -41,7 +41,7 @@ src/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/todo-app.git
+   git clone https://github.com/hosseinfti/saraf-todo.git
    cd todo-app
    ```
 
