@@ -24,11 +24,17 @@ export default function TodoList() {
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const [sort, setSort] = useState<"created" | "alpha">("created");
 
   const filteredTodos = todos.filter((todo) => {
     if (filter === "active") return !todo.completed;
     if (filter === "completed") return todo.completed;
     return true;
+  });
+
+  const sortedTodos = [...filteredTodos].sort((a, b) => {
+    if (sort === "created") return b.createdAt - a.createdAt;
+    return a.description.localeCompare(b.description);
   });
 
   return (
@@ -61,6 +67,18 @@ export default function TodoList() {
             <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </FormControl>
+        <FormControl sx={{ minWidth: 180 }}>
+          <InputLabel id="sort-label">Sort by</InputLabel>
+          <Select
+            labelId="sort-label"
+            value={sort}
+            label="Sort by"
+            onChange={(e) => setSort(e.target.value as any)}
+          >
+            <MenuItem value="created">Creation Date</MenuItem>
+            <MenuItem value="alpha">Alphabetical</MenuItem>
+          </Select>
+        </FormControl>
       </Stack>
 
       <TableContainer component={Paper}>
@@ -73,7 +91,7 @@ export default function TodoList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTodos.map((todo) => (
+            {sortedTodos.map((todo) => (
               <TableRow key={todo.id}>
                 <TableCell>{todo.description}</TableCell>
                 <TableCell>
