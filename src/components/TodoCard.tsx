@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTodoStore } from "../store/useTodoStore";
+import type { Todo } from "../models/todo";
 
 export default function TodoCard(todo: Todo) {
   const navigate = useNavigate();
